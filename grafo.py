@@ -22,6 +22,27 @@ def grafo_padrao():
     return grafo
 
 
+def grafo_distancia():
+    grafo = Grafo()
+    grafo.adicionar_vertice('A',15)
+    grafo.adicionar_vertice('B',7)
+    grafo.adicionar_vertice('C',10)
+    grafo.adicionar_vertice('D',4)
+    grafo.adicionar_vertice('E',3)
+    grafo.adicionar_vertice('F',0)
+    grafo.adicionar_vertice('G',13)
+    grafo.adicionar_vertice('H',9)
+    grafo.adicionar_vertice('I',2)
+    grafo.adicionar_aresta('A', 'C', 1)
+    grafo.adicionar_aresta('C', 'B', 4)
+    grafo.adicionar_aresta('C', 'G', 1)
+    grafo.adicionar_aresta('G', 'B', 1)
+    grafo.adicionar_aresta('B', 'D', 2)
+    grafo.adicionar_aresta('B', 'E', 6)
+    grafo.adicionar_aresta('G', 'H', 5)
+    grafo.adicionar_aresta('E', 'F', 3)
+    grafo.adicionar_aresta('B', 'I', 2)
+    return grafo
 
 
 # Crie uma classe de grafo que implemente as seguintes operações:
@@ -35,6 +56,11 @@ class Grafo:
     def adicionar_vertice(self, nome):
         vertice = Vertice(nome)
         self.vertices.append(vertice)
+
+    def adicionar_vertice(self, nome,distancia):
+        vertice = Vertice(nome)
+        self.vertices.append(vertice)
+        vertice.distancia = distancia
 
 
     def adicionar_aresta(self, nome_vertice1, nome_vertice2, peso):
@@ -60,6 +86,7 @@ class Vertice:
         self.pai = None
         self.custo = 0
         self.explorado = False
+        self.distancia = 0
     
     def __str__(self):
         return self.nome
