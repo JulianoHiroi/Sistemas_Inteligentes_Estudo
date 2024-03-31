@@ -2,10 +2,16 @@
 # O tabuleiro é representado por uma matriz 8x8
 # Cada rainha ficará em uma coluna e irá mexer sempre na sua coluna para achar a melhor posição
 # Uma matriz auxiliar de heuristica é criada para cada nó, onde cada posição da matriz representa a quantidade de ataques de pares de rainhas acontecem se a rainha da coluna mudar para essa posioção
-
+# A tempura simulada é um algoritmo de busca local que tenta achar o melhor estado de um problema de otimização
 import copy
+import math
+import random
+
 
 TAMANHO = 8
+TEMP_INICIAL = 1000
+ALPHA = 0.99
+
 
 
 class No:
@@ -91,47 +97,57 @@ def heuristica(tabuleiro):
     return heuristica
 
 
-def achar_melhores(no):
-    #acha os melhores vizinhos
-    # se a heuristica do vizinho for menor que a heuristica do no atual, o vizinho é adicionado a lista de melhores
-    # ira percorrer a matriz e calcular a heuristica de cada estado de tabuleiro que é possivel fazer com um movimetno de rainha na mesma coluna
-    melhor = None
-    menor = no.heuristica
+
+def escalonamento(tempo):
+    return TEMP_INICIAL * (ALPHA ** tempo)
+def sucessor_aleatorio(no):
+    #achar um sucessor aleatorio
+    auxNo = copy.deepcopy(no)
+
+    y = random.randint(0, 7)
+    x = random.randint(0, 7)
     for i in range(TAMANHO):
-        for j in range(TAMANHO):
-            if no.estado[i][j] == 0:
-                aux = copy.deepcopy(no.estado)
-                #print(aux)
-                for k in range(TAMANHO):
-                    if aux[k][j] == 1:
-                        local_rainha = k
-                        break
-                aux[i][j] = 1
-                aux[local_rainha][j] = 0
-                heuristica_aux = heuristica(aux)
-                if heuristica_aux <= menor:
-                    '''if heuristica_aux < menor:
-                        #print("A heuristica é: ", heuristica_aux)
-                        melhores = []'''
-                    melhor = No(aux)
-                    melhor.heuristica = heuristica_aux
-                    menor = heuristica(aux)
-
-    return melhor
-
-def buca_subida_encosta(estado):
-    no = No(estado)
-    no.heuristica = heuristica(estado)
-    while True:
-        melhor = achar_melhores(no)
-        if melhor == None:
-            print("O estado é: ", no.estado)
-            for i in range(TAMANHO):
-                print(no.estado[i])
-            print ("A heuristica é: ", no.heuristica)
-            print ("Não foi possivel achar um melhor estado")
+        if auxNo.estado[i][y] == 1:
+            auxNo.estado[i][y] = 0
+            
+            while x == i:
+                x = random.randint(0, 7)
+            auxNo.estado[x][y] = 1
             break
-        no = melhor
+            
+    auxNo.heuristica = heuristica(auxNo.estado)
+
+    return auxNo
+    
+
+def calcular_probabilidade(delta_E, temperatura):
+    # Calcular o valor de e elevado a delta_E dividido pela temperatura
+    return math.exp(delta_E / temperatura)
+
+def busca_tempera_simulada(problema):
+    atual = No(problema)
+    atual.heuristica = heuristica(atual.estado)
+    for i in range(5000):
+        temp = escalonamento(i) 
+        if temp == 0 or atual.heuristica == 0:
+            print("Tempo: ", i)
+            #print (atual.estado)
+            break
+        proximo = sucessor_aleatorio(atual)
+        DeltaE =  atual.heuristica - proximo.heuristica 
+        if DeltaE > 0: 
+            atual = proximo
+        else:
+            # Calcular a probabilidade de aceitar o estado 
+            # Se a probabilidade for maior que um número aleatório, aceitar o estado
+            probabilidade = calcular_probabilidade(DeltaE, temp)
+            numero_aleatorio = random.random()
+            if probabilidade > numero_aleatorio:
+                atual = proximo
+    return atual
+
+
+    
                 
     
 
@@ -147,7 +163,12 @@ def main():
                  [0, 1, 0, 0, 0, 1, 0, 1],
                  [0, 0, 0, 0, 0, 0, 1, 0],
                  [0, 0, 0, 0, 0, 0, 0, 0]]
-    buca_subida_encosta(tabuleiro)
+    
+    resultado = busca_tempera_simulada(tabuleiro)
+    for i in range(TAMANHO):
+        print(resultado.estado[i])
+    
+    print(combinacao(8, 2))
 
     return 0    
 
