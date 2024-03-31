@@ -19,16 +19,6 @@ class No:
         self.estado = estado
         self.heuristica = 0
 def combinacao(n, k):
-    """
-    Calcula o coeficiente binomial (combinação) C(n, k).
-    
-    Args:
-        n (int): Número total de elementos no conjunto.
-        k (int): Número de elementos a serem escolhidos.
-        
-    Returns:
-        int: O valor da combinação C(n, k).
-    """
     if k < 0 or k > n:
         return 0
     else:
